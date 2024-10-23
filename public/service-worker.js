@@ -8,7 +8,7 @@ precacheAndRoute(self.__WB_MANIFEST || []);
 
 // Cache API requests
 registerRoute(
-  ({ url }) => url.origin === 'http://localhost:3000', // Update with your API domain
+  ({ url }) => url.origin === 'https://cedio.github.io', // Update with your API domain if different
   new StaleWhileRevalidate({
     cacheName: 'api-cache',
   })
@@ -29,6 +29,6 @@ registerRoute(
 registerRoute(
   ({ request }) => request.mode === 'navigate',
   async () => {
-    return caches.match('/index.html', { ignoreSearch: true });
+    return caches.match('/pay-as-we-go/index.html', { ignoreSearch: true });
   }
 );

@@ -8,7 +8,7 @@ import Navbar from './components/Navbar';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/pay-as-we-go">
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
