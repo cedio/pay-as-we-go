@@ -6,17 +6,22 @@ function Balance() {
   const participants = useSelector((state) => state.transactions.participants);
   const transactions = useSelector((state) => state.transactions.transactions);
 
+  const participantMap = participants.reduce((acc, p) => {
+    acc[p.id] = p.name;
+    return acc;
+  }, {});
+
   const calculateBalances = () => {
     const balances = {};
     participants.forEach((p) => {
-      balances[p.name] = 0;
+      balances[p.id] = 0;
     });
 
     transactions.forEach((t) => {
       const splitAmount = t.amount / t.participants.length;
-      t.participants.forEach((p) => {
-        if (p !== t.paidBy) {
-          balances[p] -= splitAmount;
+      t.participants.forEach((pId) => {
+        if (pId !== t.paidBy) {
+          balances[pId] -= splitAmount;
           balances[t.paidBy] += splitAmount;
         }
       });
@@ -26,11 +31,11 @@ function Balance() {
     const debtors = [];
     const creditors = [];
 
-    Object.keys(balances).forEach((person) => {
-      if (balances[person] < 0) {
-        debtors.push({ name: person, amount: -balances[person] });
-      } else if (balances[person] > 0) {
-        creditors.push({ name: person, amount: balances[person] });
+    Object.keys(balances).forEach((pId) => {
+      if (balances[pId] < -0.01) {
+        debtors.push({ id: pId, amount: -balances[pId] });
+      } else if (balances[pId] > 0.01) {
+        creditors.push({ id: pId, amount: balances[pId] });
       }
     });
 
@@ -44,8 +49,8 @@ function Balance() {
 
         const settledAmount = Math.min(remaining, creditor.amount);
         settlements.push({
-          from: debtor.name,
-          to: creditor.name,
+          from: participantMap[debtor.id],
+          to: participantMap[creditor.id],
           amount: settledAmount.toFixed(2),
         });
         creditor.amount -= settledAmount;

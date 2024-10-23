@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addParticipant } from '../redux/slices/transactionsSlice';
+import { addParticipant, editParticipant, deleteParticipant } from '../redux/slices/transactionsSlice';
 import {
   Container,
   Typography,
@@ -11,48 +11,58 @@ import {
   List,
   ListItem,
   ListItemText,
-  Snackbar,
-  Alert,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
-import Slide from '@mui/material/Slide';
-
-// Optional: Slide Transition for Snackbar
-function SlideTransition(props) {
-  return <Slide {...props} direction="down" />;
-}
+import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 function Participants() {
   const participants = useSelector((state) => state.transactions.participants);
   const dispatch = useDispatch();
   const [name, setName] = useState('');
-  const [open, setOpen] = useState(false);
+
+  // State for editing
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [currentParticipant, setCurrentParticipant] = useState(null);
+  const [editName, setEditName] = useState('');
 
   const handleAdd = () => {
     if (name.trim()) {
-      dispatch(addParticipant({ id: Date.now(), name }));
+      dispatch(addParticipant({ id: Date.now(), name: name.trim() }));
       setName('');
-      setOpen(true);
     }
+  };
+
+  const handleEditOpen = (participant) => {
+    setCurrentParticipant(participant);
+    setEditName(participant.name);
+    setEditDialogOpen(true);
+  };
+
+  const handleEditClose = () => {
+    setEditDialogOpen(false);
+    setCurrentParticipant(null);
+  };
+
+  const handleEditSave = () => {
+    if (editName.trim()) {
+      dispatch(editParticipant({
+        id: currentParticipant.id,
+        updatedParticipant: { name: editName.trim() },
+      }));
+      handleEditClose();
+    }
+  };
+
+  const handleDelete = (id) => {
+    dispatch(deleteParticipant(id));
   };
 
   return (
     <Container>
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={() => setOpen(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Positioning at top-center
-        TransitionComponent={SlideTransition} // Adding slide transition
-      >
-        <Alert
-          onClose={() => setOpen(false)}
-          severity="success"
-          sx={{ width: '100%', fontSize: '1.2rem', fontWeight: 'bold' }} // Enhanced styling
-          variant="filled" // Filled variant for higher visibility
-        >
-          Participant added successfully!
-        </Alert>
-      </Snackbar>
       <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
         Participants
       </Typography>
@@ -76,11 +86,47 @@ function Participants() {
       </Paper>
       <List>
         {participants.map((p) => (
-          <ListItem key={p.id} divider>
+          <ListItem
+            key={p.id}
+            divider
+            secondaryAction={
+              <>
+                <IconButton edge="end" aria-label="edit" onClick={() => handleEditOpen(p)}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(p.id)}>
+                  <DeleteIcon />
+                </IconButton>
+              </>
+            }
+          >
             <ListItemText primary={p.name} />
           </ListItem>
         ))}
       </List>
+
+      {/* Edit Participant Dialog */}
+      <Dialog open={editDialogOpen} onClose={handleEditClose}>
+        <DialogTitle>Edit Participant</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="Participant Name"
+            variant="outlined"
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleEditClose} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary" variant="contained">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
