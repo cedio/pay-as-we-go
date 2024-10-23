@@ -7,11 +7,15 @@ import App from './App';
 import { Provider } from 'react-redux';
 import store from './redux/store';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'; // Ensure this file exists
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme'; // Ensure this path is correct
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

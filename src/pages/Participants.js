@@ -1,8 +1,25 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addParticipant } from '../redux/slices/transactionsSlice';
-import { Container, Typography, TextField, Button, List, ListItem, ListItemText, Grid, Paper } from '@mui/material';
-import { Snackbar, Alert } from '@mui/material';
+import {
+  Container,
+  Typography,
+  Paper,
+  Grid,
+  TextField,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Snackbar,
+  Alert,
+} from '@mui/material';
+import Slide from '@mui/material/Slide';
+
+// Optional: Slide Transition for Snackbar
+function SlideTransition(props) {
+  return <Slide {...props} direction="down" />;
+}
 
 function Participants() {
   const participants = useSelector((state) => state.transactions.participants);
@@ -20,6 +37,22 @@ function Participants() {
 
   return (
     <Container>
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={() => setOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Positioning at top-center
+        TransitionComponent={SlideTransition} // Adding slide transition
+      >
+        <Alert
+          onClose={() => setOpen(false)}
+          severity="success"
+          sx={{ width: '100%', fontSize: '1.2rem', fontWeight: 'bold' }} // Enhanced styling
+          variant="filled" // Filled variant for higher visibility
+        >
+          Participant added successfully!
+        </Alert>
+      </Snackbar>
       <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
         Participants
       </Typography>
@@ -48,11 +81,6 @@ function Participants() {
           </ListItem>
         ))}
       </List>
-      <Snackbar open={open} autoHideDuration={6000} onClose={() => setOpen(false)}>
-        <Alert onClose={() => setOpen(false)} severity="success" sx={{ width: '100%' }}>
-          Participant added successfully!
-        </Alert>
-      </Snackbar>
     </Container>
   );
 }
