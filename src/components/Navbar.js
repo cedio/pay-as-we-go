@@ -1,9 +1,13 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton, Drawer, List, ListItem, ListItemText, useTheme, useMediaQuery, Select, MenuItem } from '@mui/material';
-import { Menu as MenuIcon } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, Button, IconButton, Drawer, List, ListItem, ListItemText, Select, MenuItem, useTheme, useMediaQuery } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedCurrency } from '../redux/slices/currencySlice';
+import useOnlineStatus from '../hooks/useOnlineStatus';
+import CircleIcon from '@mui/icons-material/Circle'; // Icon for status indicator
+import { green, red } from '@mui/material/colors';
+import './Navbar.css'; // Ensure you have appropriate styles
 
 function Navbar() {
   const theme = useTheme();
@@ -11,6 +15,7 @@ function Navbar() {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const dispatch = useDispatch();
   const { availableCurrencies, selectedCurrency } = useSelector((state) => state.currency);
+  const isOnline = useOnlineStatus(); // Get online status
 
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
@@ -49,6 +54,12 @@ function Navbar() {
             ))}
           </Select>
         </ListItem>
+        <ListItem>
+          <Typography variant="body2" display="flex" alignItems="center">
+            <CircleIcon sx={{ color: isOnline ? green[500] : red[500], mr: 1 }} />
+            {isOnline ? 'Online' : 'Offline'}
+          </Typography>
+        </ListItem>
       </List>
     </div>
   );
@@ -72,19 +83,25 @@ function Navbar() {
               </Button>
             ))}
           {!isMobile && (
-            <Select
-              value={selectedCurrency}
-              onChange={handleCurrencyChange}
-              variant="outlined"
-              size="small"
-              style={{ marginLeft: '1rem', color: 'white', borderColor: 'white' }}
-            >
-              {availableCurrencies.map((currency) => (
-                <MenuItem key={currency} value={currency}>
-                  {currency}
-                </MenuItem>
-              ))}
-            </Select>
+            <>
+              <Select
+                value={selectedCurrency}
+                onChange={handleCurrencyChange}
+                variant="outlined"
+                size="small"
+                style={{ marginLeft: '1rem', color: 'white', borderColor: 'white' }}
+              >
+                {availableCurrencies.map((currency) => (
+                  <MenuItem key={currency} value={currency}>
+                    {currency}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Typography variant="body2" display="flex" alignItems="center" sx={{ ml: 2 }}>
+                <CircleIcon sx={{ color: isOnline ? green[500] : red[500], mr: 0.5 }} />
+                {isOnline ? 'Online' : 'Offline'}
+              </Typography>
+            </>
           )}
         </Toolbar>
       </AppBar>

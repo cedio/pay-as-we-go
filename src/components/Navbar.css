@@ -20,3 +20,12 @@
 .navbar a:hover {
   text-decoration: underline;
 }
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+}
+
+.status-indicator .icon {
+  margin-right: 0.5rem;
+}

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import currencyService from '../../services/currencyService';
+import currencyConfig from '../../config/currencyConfig'; // Import the config
 
 // Async thunk to fetch exchange rates
 export const fetchExchangeRates = createAsyncThunk(
@@ -13,7 +14,7 @@ export const fetchExchangeRates = createAsyncThunk(
 const currencySlice = createSlice({
   name: 'currency',
   initialState: {
-    availableCurrencies: ['USD', 'EUR', 'GBP', 'JPY', 'HKD', 'CNY', 'TWD'],
+    availableCurrencies: currencyConfig.currencies, // Use config
     selectedCurrency: 'USD',
     exchangeRates: { USD: 1 },
     lastUpdated: null, // Add lastUpdated field
