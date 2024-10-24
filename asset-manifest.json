@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/pay-as-we-go/static/css/main.5be772b7.css",
-    "main.js": "/pay-as-we-go/static/js/main.07600f5c.js",
+    "main.js": "/pay-as-we-go/static/js/main.ada44021.js",
     "service-worker.js": "/pay-as-we-go/service-worker.js",
     "index.html": "/pay-as-we-go/index.html",
     "main.5be772b7.css.map": "/pay-as-we-go/static/css/main.5be772b7.css.map",
-    "main.07600f5c.js.map": "/pay-as-we-go/static/js/main.07600f5c.js.map"
+    "main.ada44021.js.map": "/pay-as-we-go/static/js/main.ada44021.js.map"
   },
   "entrypoints": [
     "static/css/main.5be772b7.css",
-    "static/js/main.07600f5c.js"
+    "static/js/main.ada44021.js"
   ]
 }
