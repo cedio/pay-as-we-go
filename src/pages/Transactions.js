@@ -23,8 +23,6 @@ import {
   DialogActions,
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import currencyService from '../services/currencyService'; // Ensure this service is available
-import { v4 as uuidv4 } from 'uuid'; // Install uuid package if not already
 
 function Transactions() {
   const participants = useSelector((state) => state.transactions.participants);

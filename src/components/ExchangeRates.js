@@ -8,7 +8,7 @@ import useOnlineStatus from '../hooks/useOnlineStatus';
 
 function ExchangeRates() {
   const dispatch = useDispatch();
-  const { exchangeRates, availableCurrencies, selectedCurrency, lastUpdated, status } = useSelector((state) => state.currency);
+  const { exchangeRates, availableCurrencies, selectedCurrency, lastUpdated } = useSelector((state) => state.currency);
   const isOnline = useOnlineStatus();
 
   const handleRefresh = () => {

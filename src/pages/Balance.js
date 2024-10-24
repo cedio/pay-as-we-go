@@ -68,17 +68,6 @@ function Balance() {
     return settlements;
   };
 
-  // Function to convert amount based on selected currency
-  const convertAmount = (amountInUSD) => {
-    if (selectedCurrency === 'USD') return amountInUSD.toFixed(2);
-    const rate = exchangeRates[selectedCurrency];
-    if (rate) {
-      return (amountInUSD * rate).toFixed(2);
-    }
-    console.warn(`Exchange rate for ${selectedCurrency} not found. Falling back to USD.`);
-    return amountInUSD.toFixed(2); // Fallback to USD if rate not available
-  };
-
   // Only perform calculations if exchange rates are loaded
   if (status === 'loading') {
     return (
