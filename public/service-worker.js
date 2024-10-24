@@ -8,6 +8,17 @@ precacheAndRoute(self.__WB_MANIFEST || [], {
   maximumFileSizeToCacheInBytes: 50 * 1024 * 1024, // 50 MB
 });
 
+// Immediately take control of the page
+self.skipWaiting();
+self.clients.claim();
+
+// Listen for messages from the client to skip waiting
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 // Cache exchange rate API requests
 registerRoute(
   ({ url }) => url.origin === 'https://open.er-api.com',

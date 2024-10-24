@@ -28,6 +28,7 @@ export function register(config) {
       const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
 
       if (isLocalhost) {
+        // This is running on localhost. Let’s check if a service worker still exists or not.
         checkValidServiceWorker(swUrl, config);
 
         navigator.serviceWorker.ready.then(() => {
@@ -36,6 +37,7 @@ export function register(config) {
           );
         });
       } else {
+        // Register service worker
         registerValidSW(swUrl, config);
       }
     });
@@ -46,6 +48,7 @@ function registerValidSW(swUrl, config) {
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
+      // Listen for updates to the service worker.
       registration.onupdatefound = () => {
         const installingWorker = registration.installing;
         if (installingWorker == null) {
@@ -74,6 +77,7 @@ function registerValidSW(swUrl, config) {
 }
 
 function checkValidServiceWorker(swUrl, config) {
+  // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl, {
     headers: { 'Service-Worker': 'script' },
   })
@@ -83,12 +87,14 @@ function checkValidServiceWorker(swUrl, config) {
         response.status === 404 ||
         (contentType != null && contentType.indexOf('javascript') === -1)
       ) {
+        // No service worker found. Probably a different app. Reload the page.
         navigator.serviceWorker.ready.then(registration => {
           registration.unregister().then(() => {
             window.location.reload();
           });
         });
       } else {
+        // Service worker found. Proceed as normal.
         registerValidSW(swUrl, config);
       }
     })
