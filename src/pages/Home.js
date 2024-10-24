@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Typography, Box } from '@mui/material';
+import ExchangeRates from '../components/ExchangeRates';
 
 function Home() {
   return (
@@ -12,6 +13,7 @@ function Home() {
           Manage and split your bills effortlessly with our intuitive platform.
         </Typography>
       </Box>
+      <ExchangeRates />
     </Container>
   );
 }

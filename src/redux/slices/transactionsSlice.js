@@ -22,11 +22,9 @@ const transactionsSlice = createSlice({
         // Update participant name in transactions
         state.transactions = state.transactions.map((transaction) => {
           const updatedPaidBy = transaction.paidBy === oldName ? updatedParticipant.name : transaction.paidBy;
-
           const updatedParticipants = transaction.participants.map((participantName) =>
             participantName === oldName ? updatedParticipant.name : participantName
           );
-
           return {
             ...transaction,
             paidBy: updatedPaidBy,

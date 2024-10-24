@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Transactions from './pages/Transactions';
 import Participants from './pages/Participants';
 import Balance from './pages/Balance';
 import Navbar from './components/Navbar';
+import { useDispatch } from 'react-redux';
+import { fetchExchangeRates } from './redux/slices/currencySlice';
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchExchangeRates());
+  }, [dispatch]);
+
   return (
     <Router basename="/pay-as-we-go">
       <Navbar />

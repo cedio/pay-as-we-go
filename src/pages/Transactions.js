@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addTransaction, editTransaction, deleteTransaction } from '../redux/slices/transactionsSlice';
 import {
@@ -23,10 +23,13 @@ import {
   DialogActions,
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import currencyService from '../services/currencyService'; // Ensure this service is available
+import { v4 as uuidv4 } from 'uuid'; // Install uuid package if not already
 
 function Transactions() {
   const participants = useSelector((state) => state.transactions.participants);
   const transactions = useSelector((state) => state.transactions.transactions);
+  const { exchangeRates, selectedCurrency, status } = useSelector((state) => state.currency);
   const dispatch = useDispatch();
 
   const [description, setDescription] = useState('');
@@ -42,6 +45,13 @@ function Transactions() {
   const [editPaidBy, setEditPaidBy] = useState('');
   const [editParticipantsInvolved, setEditParticipantsInvolved] = useState([]);
 
+  useEffect(() => {
+    // Optionally, handle side effects when exchangeRates update
+    if (status === 'failed') {
+      console.error('Failed to fetch exchange rates.');
+    }
+  }, [status]);
+
   const handleAddTransaction = () => {
     if (description && amount && paidBy && participantsInvolved.length > 0) {
       dispatch(
@@ -51,6 +61,7 @@ function Transactions() {
           amount: parseFloat(amount),
           paidBy,
           participants: participantsInvolved,
+          currency: selectedCurrency, // Save the current currency
           date: new Date().toISOString(),
         })
       );
@@ -59,17 +70,15 @@ function Transactions() {
       setAmount('');
       setPaidBy('');
       setParticipantsInvolved([]);
+    } else {
+      alert('Please fill in all fields.');
     }
-  };
-
-  const handleDelete = (id) => {
-    dispatch(deleteTransaction(id));
   };
 
   const handleEditOpen = (transaction) => {
     setCurrentTransaction(transaction);
     setEditDescription(transaction.description);
-    setEditAmount(transaction.amount.toString());
+    setEditAmount(transaction.amount);
     setEditPaidBy(transaction.paidBy);
     setEditParticipantsInvolved(transaction.participants);
     setEditDialogOpen(true);
@@ -90,11 +99,31 @@ function Transactions() {
             amount: parseFloat(editAmount),
             paidBy: editPaidBy,
             participants: editParticipantsInvolved,
+            currency: selectedCurrency, // Update currency if needed
           },
         })
       );
       handleEditClose();
+    } else {
+      alert('Please fill in all fields.');
     }
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm('Are you sure you want to delete this transaction?')) {
+      dispatch(deleteTransaction(id));
+    }
+  };
+
+  // Function to convert amount based on selected currency
+  const convertAmount = (amountInUSD, transactionCurrency) => {
+    if (selectedCurrency === transactionCurrency) return amountInUSD.toFixed(2);
+    const rate = exchangeRates[selectedCurrency];
+    if (rate) {
+      return (amountInUSD * rate).toFixed(2);
+    }
+    console.warn(`Exchange rate for ${selectedCurrency} not found. Falling back to USD.`);
+    return amountInUSD.toFixed(2); // Fallback to USD if rate not available
   };
 
   const getParticipantName = (id) => {
@@ -121,7 +150,7 @@ function Transactions() {
           <Grid item xs={12} sm={3}>
             <TextField
               fullWidth
-              label="Amount"
+              label={`Amount (${selectedCurrency})`}
               variant="outlined"
               type="number"
               value={amount}
@@ -173,6 +202,16 @@ function Transactions() {
           </Grid>
         </Grid>
       </Paper>
+      {status === 'loading' && (
+        <Typography variant="h6" align="center">
+          Loading exchange rates...
+        </Typography>
+      )}
+      {status === 'failed' && (
+        <Typography variant="h6" align="center" color="error">
+          Failed to load exchange rates. Displaying amounts in USD.
+        </Typography>
+      )}
       <List>
         {transactions.map((t) => (
           <ListItem
@@ -190,7 +229,7 @@ function Transactions() {
             }
           >
             <ListItemText
-              primary={`${t.description} - $${t.amount.toFixed(2)}`}
+              primary={`${t.description} - ${convertAmount(t.amount, t.currency)} ${selectedCurrency}`}
               secondary={
                 <>
                   <Typography component="span" variant="body2" color="textPrimary">
@@ -204,6 +243,10 @@ function Transactions() {
                   <Typography component="span" variant="body2" color="textSecondary">
                     Date: {new Date(t.date).toLocaleString()}
                   </Typography>
+                  <br />
+                  <Typography component="span" variant="body2" color="textSecondary">
+                    Currency: {t.currency}
+                  </Typography>
                 </>
               }
             />
@@ -215,8 +258,8 @@ function Transactions() {
       <Dialog open={editDialogOpen} onClose={handleEditClose} maxWidth="sm" fullWidth>
         <DialogTitle>Edit Transaction</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Description"
@@ -228,7 +271,7 @@ function Transactions() {
             <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
-                label="Amount"
+                label={`Amount (${selectedCurrency})`}
                 variant="outlined"
                 type="number"
                 value={editAmount}
