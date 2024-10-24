@@ -13,9 +13,6 @@ registerRoute(
   ({ url }) => url.origin === 'https://open.er-api.com',
   new StaleWhileRevalidate({
     cacheName: 'exchange-rates-cache',
-    plugins: [
-      // Optionally, add expiration or other plugins
-    ],
   })
 );
 

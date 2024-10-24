@@ -1,13 +1,27 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton, Drawer, List, ListItem, ListItemText, Select, MenuItem, useTheme, useMediaQuery } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Select,
+  MenuItem,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedCurrency } from '../redux/slices/currencySlice';
 import useOnlineStatus from '../hooks/useOnlineStatus';
-import CircleIcon from '@mui/icons-material/Circle'; // Icon for status indicator
+import CircleIcon from '@mui/icons-material/Circle';
 import { green, red } from '@mui/material/colors';
-import './Navbar.css'; // Ensure you have appropriate styles
+import './Navbar.css';
 
 function Navbar() {
   const theme = useTheme();
@@ -15,7 +29,7 @@ function Navbar() {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const dispatch = useDispatch();
   const { availableCurrencies, selectedCurrency } = useSelector((state) => state.currency);
-  const isOnline = useOnlineStatus(); // Get online status
+  const isOnline = useOnlineStatus();
 
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
@@ -26,10 +40,10 @@ function Navbar() {
   };
 
   const menuItems = [
-    { text: 'Home', path: '/' },
-    { text: 'Participants', path: '/participants' },
-    { text: 'Transactions', path: '/transactions' },
-    { text: 'Balance', path: '/balance' },
+    { text: 'Home', path: '' },
+    { text: 'Participants', path: 'participants' },
+    { text: 'Transactions', path: 'transactions' },
+    { text: 'Balance', path: 'balance' },
   ];
 
   const drawer = (
